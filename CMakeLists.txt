@@ -3,7 +3,7 @@ project(GAL_MaximalIndependetSets)
 
 # find boost
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost COMPONENTS graph REQUIRED)
+find_package(Boost COMPONENTS graph program_options REQUIRED)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O2 -Wall")
 if (APPLE)
