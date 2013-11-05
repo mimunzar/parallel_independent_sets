@@ -17,14 +17,10 @@ typedef boost::adjacency_list<boost::vecS, boost::vecS,
 
 #include "seq_ind_sets.hpp"
 
-void printIndependentSets(vector<vector <int>> *independent_sets) {
-
-	vector<vector <int>>::iterator it_outer;
- 	vector<int>::iterator it_inner;
-	for ( it_outer = independent_sets->begin() ; it_outer != independent_sets->end();
+void printIndependentSets(const vector<vector <int>>& independent_sets) {
+	for ( auto it_outer = independent_sets.begin() ; it_outer != independent_sets.end();
 	 ++it_outer ) {
-		for ( it_inner = (* it_outer).begin() ; it_inner != (* it_outer).end();
-	 		++it_inner ) {
+		for (auto it_inner = it_outer->begin() ; it_inner != it_outer->end(); ++it_inner ) {
 			std::cout << *it_inner << " ";
 		}
 		std::cout << std::endl;
@@ -77,7 +73,7 @@ int main(int argc, char *argv[])
 			}
 			else {
 				independent_sets = seqIndSets(g);
-				printIndependentSets(&independent_sets);
+				printIndependentSets(independent_sets);
 			}
 		}
 		catch (std::exception& e)
