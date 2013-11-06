@@ -8,6 +8,7 @@
 #include <boost/program_options.hpp>
 #include <chrono>
 #include "seq_ind_sets.hpp"
+#include "par_ind_sets.hpp"
 
 namespace po = boost::program_options;
 using namespace std;
@@ -79,13 +80,12 @@ int main(int argc, char *argv[])
         	boost::read_graphml(in, g, dp);
 
 			if ( p_given == true ) {
-				// paralelni
-				std::cout << "Paralelni" << std::endl;
+                SPEED_MEASURE(independent_sets = parIndSets(g));
 			}
 			else {
                 SPEED_MEASURE(independent_sets = seqIndSets(g));
-				printIndependentSets(independent_sets);
 			}
+            printIndependentSets(independent_sets);
 		}
 		catch (std::exception& e)
 		{
