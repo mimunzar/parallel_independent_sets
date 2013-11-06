@@ -6,16 +6,10 @@
 
 #include <iostream>
 #include <boost/program_options.hpp>
-namespace po = boost::program_options;
-
-#include <boost/graph/graphml.hpp>
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/adjacency_list_io.hpp>
-#include <boost/graph/named_graph.hpp>
-typedef boost::adjacency_list<boost::vecS, boost::vecS,
-        boost::undirectedS> Graph;
-
 #include "seq_ind_sets.hpp"
+
+namespace po = boost::program_options;
+using namespace std;
 
 void printIndependentSets(const vector<vector <int>>& independent_sets) {
 	for ( auto it_outer = independent_sets.begin() ; it_outer != independent_sets.end();
