@@ -7,7 +7,7 @@ using namespace std;
 
 namespace
 {
-    const int MaxProcessors = 10;
+    const int MaxThreads = 10;
     typedef typename boost::graph_traits<Graph>::adjacency_iterator AdjIterator;
 
     mutex IndependentSetsMutex;
@@ -199,7 +199,7 @@ std::vector<std::vector <int>> parIndSets(const Graph& g)
     for (int i = 0; i < initial.size(); ++i)
     {
         unique_lock<mutex> lck(CommunicationChannelMutex);
-        while (RunningCount > MaxProcessors)
+        while (RunningCount > MaxThreads)
         {
             CommunicationChannel.wait(lck);
         }
