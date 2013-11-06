@@ -1,11 +1,21 @@
 #include "par_ind_sets.hpp"
 #include <thread>
+#include <atomic>
+#include <condition_variable>
 
 using namespace std;
 
 namespace
 {
+    const int MaxProcessors = 10;
     typedef typename boost::graph_traits<Graph>::adjacency_iterator AdjIterator;
+
+    mutex IndependentSetsMutex;
+    atomic_int RunningCount;
+    condition_variable CommunicationChannel;
+    mutex CommunicationChannelMutex;
+
+
 
     enum {NoSet = 0, RSet = 1, NSet, SSet};
 
@@ -133,7 +143,9 @@ namespace
             // step 3
             if (useVertex != -1 && TestMaximality(last))
             {
+                IndependentSetsMutex.lock();
                 independentSets.push_back(last);
+                IndependentSetsMutex.unlock();
                 reduce = true;
             }
             else if (!TestExpansionPossible(last)) // step 4
@@ -149,6 +161,8 @@ namespace
             {
                 if (matrix.size() == 1)
                 {
+                    RunningCount--;
+                    CommunicationChannel.notify_one();
                     return;
                 }
                 int x = independent.back();
@@ -175,18 +189,32 @@ namespace
 
 std::vector<std::vector <int>> parIndSets(const Graph& g)
 {
+    RunningCount = 0;
     std::vector<std::vector<int>> independentSets;
     std::vector<int> initial;
     initial.resize(boost::num_vertices(g), NSet);
 
+    vector<thread> threads;
+
     for (int i = 0; i < initial.size(); ++i)
     {
-        RunAlgorithm(i, g, initial, independentSets);
+        unique_lock<mutex> lck(CommunicationChannelMutex);
+        while (RunningCount > MaxProcessors)
+        {
+            CommunicationChannel.wait(lck);
+        }
+        RunningCount++;
+        threads.push_back(std::thread(RunAlgorithm, i, std::ref(g), initial, std::ref(independentSets)));
         initial[i] = SSet;
         if(EmptyAdjSSetIntersectionWithNSet(g, initial))
         {
             break;
         }
+    }
+
+    for (auto& t: threads)
+    {
+        t.join();
     }
 
     return independentSets;
