@@ -6,20 +6,37 @@
 
 #include <iostream>
 #include <boost/program_options.hpp>
+#include <chrono>
 #include "seq_ind_sets.hpp"
 
 namespace po = boost::program_options;
 using namespace std;
 
-void printIndependentSets(const vector<vector <int>>& independent_sets) {
+void printIndependentSets(const vector<vector <int>>& independent_sets)
+{
+    std::cout << "Maximum independent sets: \n";
 	for ( auto it_outer = independent_sets.begin() ; it_outer != independent_sets.end();
-	 ++it_outer ) {
-		for (auto it_inner = it_outer->begin() ; it_inner != it_outer->end(); ++it_inner ) {
-			std::cout << *it_inner << " ";
+	 ++it_outer )
+    {
+		for (unsigned v = 0; v < it_outer->size(); v++)
+        {
+			if (it_outer->at(v))
+            {
+                std::cout << " " << v;
+            }
 		}
 		std::cout << std::endl;
 	}
 }
+
+#define SPEED_MEASURE(f)\
+do {\
+    auto start = chrono::high_resolution_clock::now();\
+    f;\
+    auto end = chrono::high_resolution_clock::now();\
+    double runningTime = chrono::duration<double>(end - start).count();\
+    std::cerr << "Running time [s]: " << runningTime <<std::endl;\
+} while(false)
 
 int main(int argc, char *argv[])
 {
@@ -44,7 +61,7 @@ int main(int argc, char *argv[])
 		    po::notify(vm);
 
 		    if (vm.count("help")) {
-				std::cout << "Finds maximum independent set." << std::endl;
+				std::cout << "Finds maximum independent sets." << std::endl;
 		        std::cout << desc << "\n";
 		        return 0;
 		    }
@@ -66,7 +83,7 @@ int main(int argc, char *argv[])
 				std::cout << "Paralelni" << std::endl;
 			}
 			else {
-				independent_sets = seqIndSets(g);
+                SPEED_MEASURE(independent_sets = seqIndSets(g));
 				printIndependentSets(independent_sets);
 			}
 		}
@@ -81,7 +98,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		std::cout << "Finds maximum independent set." << std::endl;
+		std::cout << "Finds maximum independent sets." << std::endl;
 		std::cout << desc << "\n";
 	}
 
