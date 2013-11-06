@@ -13,6 +13,7 @@ Clean()
     rm -f $PAR_OUT
     rm -f $SEQ_ERR
     rm -f $PAR_ERR
+    exit
 }
 
 ParseRunningTime()
