@@ -7,7 +7,6 @@ using namespace std;
 
 namespace
 {
-    const int MaxThreads = 10;
     typedef typename boost::graph_traits<Graph>::adjacency_iterator AdjIterator;
 
     mutex IndependentSetsMutex;
@@ -189,6 +188,8 @@ namespace
 
 std::vector<std::vector <int>> parIndSets(const Graph& g)
 {
+    int maxThreads = static_cast<int>(std::thread::hardware_concurrency());
+    maxThreads = max(2, maxThreads-2); // TODO how to get PHYSICAL cores???
     RunningCount = 0;
     std::vector<std::vector<int>> independentSets;
     std::vector<int> initial;
@@ -199,7 +200,7 @@ std::vector<std::vector <int>> parIndSets(const Graph& g)
     for (int i = 0; i < initial.size(); ++i)
     {
         unique_lock<mutex> lck(CommunicationChannelMutex);
-        while (RunningCount > MaxThreads)
+        while (RunningCount > maxThreads)
         {
             CommunicationChannel.wait(lck);
         }

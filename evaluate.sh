@@ -28,8 +28,8 @@ for g in `find $GRAPHS_DIR -type f -name '*.gml'`
 do
     echo -en "$g\t"
     $BIN $g 2> $SEQ_ERR | tail -n +2 | sort > $SEQ_OUT
-    $BIN -p $g 2> $PAR_ERR | tail -n +2 | sort > $PAR_OUT
     ParseRunningTime $SEQ_ERR
+    $BIN -p $g 2> $PAR_ERR | tail -n +2 | sort > $PAR_OUT
     ParseRunningTime $PAR_ERR
     echo
     if [[ ! -z "`diff $SEQ_OUT $PAR_OUT`" ]]; then

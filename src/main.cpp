@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 			else {
                 SPEED_MEASURE(independent_sets = seqIndSets(g));
 			}
-            printIndependentSets(independent_sets);
+            printIndependentSets(independent_sets); // TODO add switch to disable independent sets printing
 		}
 		catch (std::exception& e)
 		{
