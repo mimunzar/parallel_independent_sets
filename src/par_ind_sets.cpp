@@ -219,3 +219,24 @@ std::vector<std::vector <int>> parIndSets(const Graph& g)
 
     return independentSets;
 }
+
+
+std::vector<std::vector <int>> seq_parIndSets(const Graph& g)
+{
+    std::vector<std::vector<int>> independentSets;
+    std::vector<int> initial;
+    initial.resize(boost::num_vertices(g), NSet);
+
+
+    for (int i = 0; i < initial.size(); ++i)
+    {
+        RunAlgorithm(i, g, initial, independentSets);
+        initial[i] = SSet;
+        if(EmptyAdjSSetIntersectionWithNSet(g, initial))
+        {
+            break;
+        }
+    }
+
+    return independentSets;
+}

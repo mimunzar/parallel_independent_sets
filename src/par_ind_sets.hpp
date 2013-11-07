@@ -5,4 +5,12 @@
 
 #include "common.hpp"
 
+/**
+* Parallel version
+*/
 std::vector<std::vector <int>> parIndSets(const Graph& g);
+
+/**
+* Sequence version implemented in the same way as parIndSets
+*/
+std::vector<std::vector <int>> seq_parIndSets(const Graph& g);
