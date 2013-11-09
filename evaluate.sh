@@ -1,5 +1,6 @@
 #!/bin/bash
 
+VALIDATE_RESULTS=false
 BIN="./build/gal"
 SEQ_OUT=`mktemp -t XXXXXgal`
 PAR_OUT=`mktemp -t XXXXXgal`
@@ -36,6 +37,13 @@ UnifyOutputs()
 }
 
 
+if $VALIDATE_RESULTS; then
+    FLAGS=""
+else
+    FLAGS="--no-print"
+fi
+
+
 trap Clean SIGHUP SIGTERM SIGINT
 
 LC_NUMERIC="en_US.UTF-8"
@@ -45,25 +53,27 @@ for g in `find $GRAPHS_DIR -type f -name '*.gml' -maxdepth 1`
 do
     bname=`basename $g`
     printf "%15s" $bname
-    $BIN $g 2> $SEQ_ERR > $SEQ_OUT
+    $BIN $FLAGS $g 2> $SEQ_ERR > $SEQ_OUT
     seqTime=`ParseRunningTime $SEQ_ERR`
     printf "%16.3f" $seqTime
-    $BIN -p $g 2> $PAR_ERR > $PAR_OUT
+    $BIN $FLAGS --parallel $g 2> $PAR_ERR > $PAR_OUT
     parTime=`ParseRunningTime $PAR_ERR`
     printf "%16.3f" $parTime
     speedup=`bc -l <<< "$seqTime / $parTime"`
     printf "%16.3f\n" $speedup
 
-    UnifyOutputs $SEQ_OUT
-    UnifyOutputs $PAR_OUT
-    if [[ ! -z "`diff $SEQ_OUT $PAR_OUT`" ]]; then
-        echo "!!!! OUTPUT OF SEQUENCE AND PARALLEL ALGORITHM DIFERSS!!!!" >&2
-        echo " -- DIFF:" >&2
-        diff $SEQ_OUT $PAR_OUT >&2
-        #echo " -- SEQUENCE:" >&2
-        #cat $SEQ_OUT >&2
-        #echo " -- PARALLEL:" >&2
-        #cat $PAR_OUT >&2
+    if $VALIDATE_RESULTS; then
+        UnifyOutputs $SEQ_OUT
+        UnifyOutputs $PAR_OUT
+        if [[ ! -z "`diff $SEQ_OUT $PAR_OUT`" ]]; then
+            echo "!!!! OUTPUT OF SEQUENCE AND PARALLEL ALGORITHM DIFERSS!!!!" >&2
+            echo " -- DIFF:" >&2
+            diff $SEQ_OUT $PAR_OUT >&2
+            #echo " -- SEQUENCE:" >&2
+            #cat $SEQ_OUT >&2
+            #echo " -- PARALLEL:" >&2
+            #cat $PAR_OUT >&2
+        fi
     fi
 done
 

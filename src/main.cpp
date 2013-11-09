@@ -43,19 +43,22 @@ int main(int argc, char *argv[])
 {
 	std::string input_file;
     bool p_given = false;
+    bool s_given = false;
+    bool doNotPrint = false;
 	vector<vector <int>> independent_sets;
 	
 	po::options_description desc("Allowed options");
     desc.add_options()
         ("help", "produce help message")
-        ("sequential,s", "[default] uses sequential algorithm")
+        ("no-print", po::bool_switch(&doNotPrint), "disables printing resulting independent sets.")
+        ("sequential,s", po::bool_switch(&s_given), "[default] uses sequential algorithm")
         ("parallel,p", po::bool_switch(&p_given), "uses parallel algorithm")
-		("input-file", po::value(&input_file), "Input file containing graph")
+		("input-file,i", po::value(&input_file), "Input file containing graph")
 	;
 	po::positional_options_description p;
 	p.add("input-file", -1);
 
-	if ( argc <= 3 && argc > 1 ) {
+	if ( argc > 1 ) {
 		try {
 			po::variables_map vm;        
 		    po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
@@ -70,6 +73,10 @@ int main(int argc, char *argv[])
 		        std::cout << desc << "\n";
 		        return 0;
 			}
+            if (s_given && p_given)
+            {
+                throw std::runtime_error("Both --parallel and --sequential given.");
+            }
 
         	std::ifstream in;
         	in.open(input_file, std::ifstream::in);
@@ -83,9 +90,12 @@ int main(int argc, char *argv[])
                 SPEED_MEASURE(independent_sets = parIndSets(g));
 			}
 			else {
-                SPEED_MEASURE(independent_sets = seqIndSets(g));
+                SPEED_MEASURE(independent_sets = seq_parIndSets(g));
 			}
-            printIndependentSets(independent_sets); // TODO add switch to disable independent sets printing
+            if (!doNotPrint)
+            {
+                printIndependentSets(independent_sets);
+            }
 		}
 		catch (std::exception& e)
 		{
