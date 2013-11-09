@@ -1,6 +1,5 @@
 #!/bin/bash
 
-GRAPHS_DIR="./graphs"
 BIN="./build/gal"
 SEQ_OUT=`mktemp -t XXXXXgal`
 PAR_OUT=`mktemp -t XXXXXgal`
@@ -21,6 +20,13 @@ ParseRunningTime()
 {
     cat $1 | sed -E 's/Running time \[s\]://' | tr -d '\n' | tr -d ' '
 }
+
+if [ $# -ne 1 ]; then
+    echo "You have to pass directory with graphs as argument" >&2
+    exit
+fi
+
+GRAPHS_DIR="$1"
 
 
 UnifyOutputs()

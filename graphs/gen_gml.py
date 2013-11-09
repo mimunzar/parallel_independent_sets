@@ -12,19 +12,29 @@ import random
 import xml.dom.minidom as xml
 
 # parsing command line arguments
-def isPositive(value):
-    ivalue = int(value)
-    if ivalue < 0:
+def isPositiveInt(value):
+    value = int(value)
+    if value < 0:
          raise argparse.ArgumentTypeError("%s is an invalid positive int value" % value)
-    return ivalue
+    return value
+
+def isPositiveFloat(value):
+    value = float(value)
+    if value < 0:
+         raise argparse.ArgumentTypeError("%s is an invalid positive int value" % value)
+    return value
 
 parser = argparse.ArgumentParser(description='Generates random undirected graph in .gml format.')
-parser.add_argument('-v', type = isPositive, required=True, help = 'number of vertices')
-parser.add_argument('-e', type = isPositive, required=True, help = 'number of edges')
+parser.add_argument('-v', type = isPositiveInt, required=True, help = 'number of vertices')
+parser.add_argument('-e', type = isPositiveFloat, required=True, help = 'number of edges (or portion of maximum if <1)')
 args = parser.parse_args()
 
 # generates random edges in undirected graph
 possible_combinations = list(itertools.combinations(range(args.v),2))
+if args.e < 1:
+    args.e = len(possible_combinations)*args.e
+args.e = int(args.e)
+
 if len(possible_combinations) < args.e:
 	print "Error: Number of edges exceeds possible combinations in undirected graph!"
 	exit(0)
