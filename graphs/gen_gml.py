@@ -69,10 +69,10 @@ while used_combinations:
 
 # creates file
 file_number = 1
-file_name = str(args.e) + "_" + str(args.v) + "_" + str(file_number) + ".gml"
+file_name = str(args.v) + "_" + str(args.e) + "_" + str(file_number) + ".gml"
 while os.path.exists(file_name):
 	file_number += 1
-	file_name = str(args.e) + "_" + str(args.v) + "_" + str(file_number) + ".gml"
+	file_name = str(args.v) + "_" + str(args.e) + "_" + str(file_number) + ".gml"
 
 gml_file = open(file_name, "w")
 gml_file.write(document.toprettyxml())
