@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
                 SPEED_MEASURE(independent_sets = parIndSets(g));
 			}
 			else {
-                SPEED_MEASURE(independent_sets = seq_parIndSets(g));
+                SPEED_MEASURE(independent_sets = seqIndSets(g));
 			}
             if (!doNotPrint)
             {
