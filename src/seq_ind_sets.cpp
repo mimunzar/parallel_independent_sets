@@ -140,6 +140,8 @@ vector<vector <int>> seqIndSets(Graph g){
 
 		    for ( tie(ai, ai_end) = adjacent_vertices(chosen_vertex, g); ai != ai_end; ++ai )
 		        matrix[k + 1][*ai] = NOP;
+
+			k += 1;
 		}
         else {
             // 6. Reducing item set
