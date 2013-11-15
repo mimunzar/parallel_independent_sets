@@ -19,19 +19,6 @@ namespace
         cout << endl;
     }
 
-    // Returns adjacent vertices for given vertex.
-    vector<int> adjacentVertices(Graph g, int vertex) {
-
-        vector<int> adjacency_list;
-        typename boost::graph_traits<Graph>::adjacency_iterator ai;
-        typename boost::graph_traits<Graph>::adjacency_iterator ai_end;
-
-        for ( tie(ai, ai_end) = adjacent_vertices(vertex, g); ai != ai_end; ++ai )
-            adjacency_list.push_back(*ai);
-
-        return adjacency_list;
-    }
-
     // 3. Tests R maximality.
     bool Rmaximality(vector<int> *row) {
 
@@ -60,6 +47,8 @@ namespace
 vector<vector <int>> seqIndSets(Graph g){
 
     // 1. Initialization
+    typename boost::graph_traits<Graph>::adjacency_iterator ai;
+    typename boost::graph_traits<Graph>::adjacency_iterator ai_end;
     unsigned int n_vertices = boost::num_vertices(g);
     vector<vector <int>> matrix(1, vector<int>(n_vertices) );
     unsigned int k = 0;
@@ -74,8 +63,6 @@ vector<vector <int>> seqIndSets(Graph g){
 
     // 2. Expanding independent set
     unsigned int chosen_vertex = 0;
-    unsigned int adjacent_vertex;
-    vector<int> adjacency_list;
     unsigned int it;
 
     for ( it = 0; it < n_vertices; it++ ) {
@@ -91,12 +78,8 @@ vector<vector <int>> seqIndSets(Graph g){
     matrix[k + 1] = matrix[k];
     matrix[k + 1][chosen_vertex] = R;
 
-    adjacency_list = adjacentVertices(g, chosen_vertex);
-    while ( adjacency_list.empty() == false ) {
-        adjacent_vertex = adjacency_list.back();
-        adjacency_list.pop_back();
-        matrix[k + 1][adjacent_vertex] = NOP;
-    }
+    for ( tie(ai, ai_end) = adjacent_vertices(chosen_vertex, g); ai != ai_end; ++ai )
+        matrix[k + 1][*ai] = NOP;
 
     k += 1;
 #ifdef __DEBUG
@@ -120,15 +103,12 @@ vector<vector <int>> seqIndSets(Graph g){
                 for ( it = 0; it < n_vertices; it++ ) {
                     if ( matrix[k][it] == S ) {
                         intersect = false;
-                        adjacency_list = adjacentVertices(g, it);
-                        while ( adjacency_list.empty() == false ){
-                            chosen_vertex = adjacency_list.back();
-                            adjacency_list.pop_back();
-                            if ( matrix[k][chosen_vertex] == N ) {
-                                intersect = true;
-                                break;
-                            }
-                        }
+        				for ( tie(ai, ai_end) = adjacent_vertices(it, g); ai != ai_end; ++ai ) {
+				 			if ( matrix[k][*ai] == N ) {
+								intersect = true;
+								break;
+							}       					
+						}
                         if ( intersect == false ) {
                             reduce = true;
                             break;
@@ -158,15 +138,9 @@ vector<vector <int>> seqIndSets(Graph g){
             matrix[k + 1] = matrix[k];
             matrix[k + 1][chosen_vertex] = R;
 
-            adjacency_list = adjacentVertices(g, chosen_vertex);
-            while ( adjacency_list.empty() == false ) {
-                adjacent_vertex = adjacency_list.back();
-                adjacency_list.pop_back();
-                matrix[k + 1][adjacent_vertex] = NOP;
-            }
-
-            k += 1;
-        }
+		    for ( tie(ai, ai_end) = adjacent_vertices(chosen_vertex, g); ai != ai_end; ++ai )
+		        matrix[k + 1][*ai] = NOP;
+		}
         else {
             // 6. Reducing item set
             if ( k == 0 )

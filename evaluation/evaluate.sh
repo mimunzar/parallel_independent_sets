@@ -49,7 +49,7 @@ trap Clean SIGHUP SIGTERM SIGINT
 LC_NUMERIC="en_US.UTF-8"
 
 printf "%15s %15s %15s %15s\n" "Graph" "Sequence" "Parallel" "Speedup"
-for g in `find $GRAPHS_DIR -type f -name '*.gml' -maxdepth 1`
+for g in `find $GRAPHS_DIR -maxdepth 1 -type f -name '*.gml'`
 do
     bname=`basename $g`
     printf "%15s" $bname
