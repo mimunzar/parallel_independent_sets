@@ -28,6 +28,8 @@ plt.subplot(212)
 plt.plot(vertices, speedup)
 plt.ylabel("Zrychlení")
 plt.xlabel("Počet vrcholů grafu")
+lower, higher = plt.gca().get_ylim()
+plt.gca().set_ylim(1, higher)
 plt.title("Zrychlení")
 
 plt.tight_layout()
