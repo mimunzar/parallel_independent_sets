@@ -14,15 +14,17 @@
 \usepackage{float}
 \usepackage{multirow}
 \usepackage{booktabs}
-\usepackage[table]{xcolor}
+\usepackage[table,usenames,dvipsnames,svgnames]{xcolor}
 \usepackage[unicode,hyperindex,plainpages=false,pdftex]{hyperref}
+    
     \hypersetup{
-        colorlinks,%
-        citecolor=black,%
-        filecolor=black,%
-        linkcolor=black,%
-        urlcolor=black
-        }
+          colorlinks=true, 
+          linkcolor=BrickRed, 
+          citecolor=OliveGreen, 
+          filecolor=magenta, 
+          urlcolor=cyan
+    }
+
 
 \newlength{\skipeqarray}
 \setlength{\skipeqarray}{0.4cm}
@@ -52,7 +54,7 @@ Jakub Sochor\\
 
 
 \section{Implementace}
-Úprava algoritmu pro paralelizaci, využité prostředky pro paralelizaci
+Úprava algoritmu pro paralelizaci, využité prostředky pro paralelizaci \ref{sec:ProgramUsage}
 
 
 \section{Vyhodnocení}
@@ -67,5 +69,7 @@ Popis vyhodnocování, grafy, komentář k výsledkům
 \appendix
 \section{Naměřené výsledky}
 Tabulka naměřených výsledků...
+
+\section{Použití programu} \label{sec:ProgramUsage}
 
 \end{document}
