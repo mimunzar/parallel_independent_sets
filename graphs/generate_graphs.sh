@@ -1,8 +1,9 @@
 #!/bin/bash
 
 
-VERTICES_MIN=100
-VERTICES_MAX=400
+VERTICES_MIN=0
+VERTICES_MAX=150
+VERTICES_INCREASE_FACTOR=100
 VERTICES_STEP=5
 
 EDGES_MIN=0.4
@@ -21,7 +22,9 @@ done
 
 for ratio in `seq $EDGES_MIN $EDGES_STEP $EDGES_MAX`
 do
-    echo "Generating graphs for $ratio"
+    VERTICES_MIN=$(($VERTICES_MIN + $VERTICES_INCREASE_FACTOR))
+    VERTICES_MAX=$(($VERTICES_MAX + $VERTICES_INCREASE_FACTOR))
+    echo "Generating graphs for $ratio : $VERTICES_MIN - $VERTICES_MAX"
     rm -rf $ratio
     for vertices in `seq $VERTICES_MIN $VERTICES_STEP $VERTICES_MAX`
     do
