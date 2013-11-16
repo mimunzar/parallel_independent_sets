@@ -19,12 +19,9 @@ void printIndependentSets(const vector<vector <int>>& independent_sets)
 	for ( auto it_outer = independent_sets.begin() ; it_outer != independent_sets.end();
 	 ++it_outer )
     {
-		for (unsigned v = 0; v < it_outer->size(); v++)
+		for (auto it_inner = it_outer->begin(); it_inner != it_outer->end(); ++it_inner)
         {
-			if (it_outer->at(v))
-            {
-                std::cout << " " << v;
-            }
+                std::cout << " " << *it_inner;
 		}
 		std::cout << std::endl;
 	}

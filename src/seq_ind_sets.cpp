@@ -118,8 +118,7 @@ vector<vector <int>> seqIndSets(Graph g){
             } // 4.
         } // 3.
         else {
-            independent_sets.push_back(vector<int>(n_vertices));
-            independent_sets.back() = matrix[k];
+            independent_sets.push_back(GetIndependentSet(matrix[k]));
         }
 
         if ( reduce == false ) {

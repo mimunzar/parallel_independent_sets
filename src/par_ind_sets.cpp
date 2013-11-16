@@ -142,8 +142,9 @@ namespace
             // step 3
             if (useVertex != -1 && TestMaximality(last))
             {
+                std::vector<int> indSet = GetIndependentSet(last);
                 IndependentSetsMutex.lock();
-                independentSets.push_back(last);
+                independentSets.push_back(indSet);
                 IndependentSetsMutex.unlock();
                 reduce = true;
             }
@@ -189,7 +190,7 @@ namespace
 std::vector<std::vector <int>> parIndSets(const Graph& g)
 {
     int maxThreads = static_cast<int>(std::thread::hardware_concurrency());
-    maxThreads = max(2, maxThreads-2); // TODO how to get PHYSICAL cores???
+    maxThreads = max(2, maxThreads);
     RunningCount = 0;
     std::vector<std::vector<int>> independentSets;
     std::vector<int> initial;
