@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/graph/graphml.hpp>
+#include "graphml.hpp"
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/adjacency_list_io.hpp>
 #include <boost/graph/named_graph.hpp>
