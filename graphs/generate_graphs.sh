@@ -2,7 +2,7 @@
 
 
 VERTICES_MIN=100
-VERTICES_MAX=300
+VERTICES_MAX=400
 VERTICES_STEP=5
 
 EDGES_MIN=0.4
@@ -10,6 +10,8 @@ EDGES_MAX=0.7
 EDGES_STEP=0.1
 
 GENERATOR="./gen_gml.py"
+
+export LC_NUMERIC=en_US.UTF-8
 
 echo "Cleaning all *.gml files from current directory"
 for f in `find . -maxdepth 1 -name '*.gml'`
