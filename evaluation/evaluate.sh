@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VALIDATE_RESULTS=false
+VALIDATE_RESULTS=true
 BIN="../build/gal"
 SEQ_OUT=`mktemp -t XXXXXgal`
 PAR_OUT=`mktemp -t XXXXXgal`

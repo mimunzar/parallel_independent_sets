@@ -206,7 +206,21 @@ std::vector<std::vector <int>> parIndSets(const Graph& g)
             CommunicationChannel.wait(lck);
         }
         RunningCount++;
-        threads.push_back(std::thread(RunAlgorithm, i, std::ref(g), initial, std::ref(independentSets)));
+
+        try
+        {
+            threads.push_back(std::thread(RunAlgorithm, i, std::ref(g), initial, std::ref(independentSets)));
+        }
+        catch (std::system_error& e)
+        {
+            std::cerr << "Error when creating thread:" << e.what() << std::endl;
+        }
+        catch (...)
+        {
+            std::cerr << "Unknown error when creating thread." << std::endl;
+        }
+
+        threads.back().detach();
         initial[i] = SSet;
         if(EmptyAdjSSetIntersectionWithNSet(g, initial))
         {
@@ -214,9 +228,10 @@ std::vector<std::vector <int>> parIndSets(const Graph& g)
         }
     }
 
-    for (auto& t: threads)
+    while (RunningCount > 0)
     {
-        t.join();
+        unique_lock<mutex> lck(CommunicationChannelMutex);
+        CommunicationChannel.wait(lck);
     }
 
     return independentSets;
