@@ -5,7 +5,7 @@ project(GAL_MaximalIndependetSets)
 set(Boost_USE_MULTITHREADED ON)
 find_package(Boost COMPONENTS graph program_options REQUIRED)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -O2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O2")
 if (APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 endif (APPLE)
