@@ -26,6 +26,8 @@
     }
 
 
+\newcommand{\todo}[1]{\textcolor{red}{[[TODO: #1]]}}
+
 \newlength{\skipeqarray}
 \setlength{\skipeqarray}{0.4cm}
 
@@ -54,21 +56,37 @@ Jakub Sochor\\
 
 
 \section{Implementace}
-Úprava algoritmu pro paralelizaci, využité prostředky pro paralelizaci \ref{appendix:ProgramUsage}
+Úprava algoritmu pro paralelizaci, využité prostředky pro paralelizaci~\ref{appendix:ProgramUsage}
 
 
 \section{Vyhodnocení}
-Popis vyhodnocování, grafy, komentář k výsledkům
- AMD Phenom X4 945, 3 GHz.
+Pro účely vyhodnocení zrychlení paralelní verze algoritmu oproti sekvenční byly vytvořeny skripty, které generují náhodné grafy se zadaným počtem vrcholů a~hran ve formátu GraphML. 
+
+Jednotlivé grafy jsou rozděleny do skupin podle toho, kolik procent maximálního možného počtu hran obsahují. K~tomuto rozdělení jsme přistoupili zejména proto, aby čas běhu algoritmu v~jedné skupině grafů byl rostoucí s~počtem vrcholů daného zpracovávaného grafu, jelikož počet hran grafu významně ovlivňuje také počet maximálních nezávislých množin v~daném grafu a~tudíž i~dobu běhu. 
+
+Celé vyhodnocování bylo prováděno na třech skupinách grafů po 31 grafech ve skupině. Program byl vždy puštěn sekvenčně a~změřen čas běhu $t_S$ a~následně byl puštěn paralelně a~určen čas $t_P$, po který pracovala paralelní verze algoritmu. Do změřených časů není započteno načítání grafu ani případný výpis maximálních nezávislých množin, ale pouze čistý čas běhu algoritmu pro určení těchto množin. Pro každý graf bylo určeno zrychlení $s$ podle vzorce~\ref{eq:Speedup}.
+\begin{equation}
+    s = \frac{t_S}{t_P} \label{eq:Speedup}
+\end{equation}
+
+Testování bylo prováděno na počítači s procesorem AMD Phenom X4 945, který má 4 fyzická jádra běžící na frekvenci 3\,GHz a~4\,GB RAM. Během běhu programu nebyl na počítači puštěn žádný další výpočetně náročný proces a~pro měření času bylo využito \texttt{high\_resolution\_clock} ze standardu C++11. \todo{přidat přesnost???}
+
+Grafy vytvořené z~naměřených výsledků lze vidět na obrázku~\ref{fig:SpeedResults} a~všechny naměřené časy a~určené zrychlení jsou obsaženy v~příloze~\ref{appendix:RawResults}.
 
 \begin{figure}[p]
     \centering
     \subfloat[$50\,\%$ hran]{ \includegraphics[scale=0.55]{images/5.pdf}}\\
     \subfloat[$60\,\%$ hran]{ \includegraphics[scale=0.55]{images/6.pdf}}\\
     \subfloat[$70\,\%$ hran]{ \includegraphics[scale=0.55]{images/7.pdf}}
-    \caption{Naměřené výsledky rychlosti hledání maximálních nezávislých množin a zrychlení oproti sekvenčnímu algoritmu. Grafy obsažené v jednom grafu obsahují stejné procento všech hran.} \label{fig:SpeedResults}
+    \caption{Naměřené výsledky rychlosti hledání maximálních nezávislých množin a~zrychlení oproti sekvenčnímu algoritmu. Grafy obsažené v~jednom grafu obsahují stejné procento všech hran.} \label{fig:SpeedResults}
 \end{figure}
 
+
+Maximální teoreticky možné dosažitelné zrychlení na procesoru se čtyřmi jádry je 4,0. Jak lze vidět z~uvedených grafů, tak nám se podařilo dosáhnout zrychlení kolem 3,5. Toto považujeme za solidní výsledek, protože v~rámci programu je též nutné řešit synchronizaci přístupu do struktury obsahující výsledné maximální nezávislé množiny. 
+
+Ovšem jak si lze z~grafů všimnout, tak s~narůstajícím počtem vrcholů se zrychlení snižuje. Tento fakt je dle našeho zkoumání způsoben především tím, že velmi zásadně roste počet maximálních nezávislých množin a~jejich reprezentace v~paměti již není triviální a~program celkově využije velkého množství paměti (více než 1\,GB). 
+
+Kvůli tomuto problému jsme také experimentovali s~tím, že se maximální nezávislé množiny nebudou ukládat do paměti, ale rovnou vypisovat. S~tímto přístupem jsme ovšem dosahovali ještě horších výsledků, jelikož program trávil podstatně další čas v~kritické sekci výpisu výsledku a~tímto byla paralelní verze programu velmi zpomalena. 
 
 \section{Závěr}
 
@@ -121,7 +139,7 @@ Vrcholů & Hran & Sekvenční [s] & Parelelní [s] & Zrychlení\\\midrule
 \bottomrule
 \end{tabular}
 \end{center}
-\caption{Naměřené výsledky pro grafy s $50\,\%$ hran} 
+\caption{Naměřené výsledky pro grafy s~$50\,\%$ hran} 
 \end{table}
 
 \begin{table}[H]
@@ -164,7 +182,7 @@ Vrcholů & Hran & Sekvenční [s] & Parelelní [s] & Zrychlení\\\midrule
 \bottomrule
 \end{tabular}
 \end{center}
-\caption{Naměřené výsledky pro grafy s $60\,\%$ hran} 
+\caption{Naměřené výsledky pro grafy s~$60\,\%$ hran} 
 \end{table}
 
 \begin{table}[H]
@@ -207,7 +225,7 @@ Vrcholů & Hran & Sekvenční [s] & Parelelní [s] & Zrychlení\\\midrule
 \bottomrule
 \end{tabular}
 \end{center}
-\caption{Naměřené výsledky pro grafy s $70\,\%$ hran} 
+\caption{Naměřené výsledky pro grafy s~$70\,\%$ hran} 
 \end{table}
 
 \end{document}
