@@ -51,7 +51,17 @@ Jakub Sochor\\
 \section{Úvod}
 
 \section{Maximální nezávislé množiny}
-\subsection{Co to je}
+
+Množina vrcholů grafu je nezávilá, když žádné dva vrcholy v této množině nejsou spojeny hranou. Tato množina je maximální, pokud k ní už nelze přidat žádný vrchol a zároveń dodržet podmínku nezávislosti.
+
+Typickou úlohou pro nalezení nezávislých množin je hledání prvků, které spolu mohou nějakým způsobem fungovat. Mohou to být například procesy počítače, jež pracují nad společnými daty. Procesy jsou tomto případě vrcholy grafu a budou spojeny hranou v případě, že pro svůj běh potřebují stejná data. Nezávislá množina potom bude obsahovat ty procesy, které mohou běžet současně.
+
+Hledání maximálních nezávislých množin je NP-těžšký problém. Jedinou známou možností jak tento problém řešit je procházet všechny podmnožiny množiny vrcholů a určovat zda je zvolená množina maximální nezávislá. Jelikož množství podmnožin roste exponenciálně s počtem vrcholů je toto řešení pro velké grafy náročné.
+
+Často se v aplikacích  setkáváme s potřebou určit nezávislost grafu. Nezávislost grafu \(G\) je rovna velikosti nejpočetnější nezávislé množiny a značí se \(\alpha(G)\). Tato množina je zároveń množinou maximální, ale naopak to neplatí. Jiným požadavkem může být například nalezení nejdražší nezávislé množiny ve smyslu ohodnocení vrcholů.
+
+Pojmy úzce související s maximálními nezávislými množinami jsou klika a klikovost grafu. Klika je maximální úplný podgraf grafu \(G\) a odpovídá nějaké maximální nezavislé množině doplńkového grafu \(-G\). Klikovost grafu je pak počet vrcholů v největší klice.
+
 \subsection{Algoritmus}
 
 
