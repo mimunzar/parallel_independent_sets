@@ -50,6 +50,8 @@ Jakub Sochor\\
 
 \section{Úvod}
 
+
+
 \section{Maximální nezávislé množiny}
 
 Množina vrcholů grafu je nezávilá, když žádné dva vrcholy v této množině nejsou spojeny hranou. Tato množina je maximální, pokud k ní už nelze přidat žádný vrchol a zároveń dodržet podmínku nezávislosti.
@@ -62,8 +64,13 @@ Hledání maximálních nezávislých množin je NP-těžšký problém. Jedinou
 
 Pojmy úzce související s maximálními nezávislými množinami jsou klika a klikovost grafu. Klika je maximální úplný podgraf grafu \(G\) a odpovídá nějaké maximální nezavislé množině doplńkového grafu \(-G\). Klikovost grafu je pak počet vrcholů v největší klice.
 
-\subsection{Algoritmus}
+\subsection{Popis použitého algoritmu}
+Implementovaný algoritmus jsme převzali z \cite{demel}. Jeho základem je metoda zpětného navracení. Algoritmus lze upravit pro hledání nejpočetnější nebo nejdražší nezávislé množiny. Jeho složitost je \(O(??)\), kde \(n\) je počet uzlů grafu.
 
+% TODO: jak to je s nasi slozitosti?
+Tady bude algoritmus
+
+Jiným řešením pro nalezení maximálních nezávislých množin je například Robsonův algoritmus se složitostí \(O(2^{0.296n})\) \cite{robson}. Fomin dosáhl složitosti \(O(2^{0.288n})\) pomocí metody rozděl a panuj \cite{fomin}. Tyto algoritmy využívají heuristiky pro vyloučení některých množin z prohledávání a pro výběr uzlu.  
 
 \section{Implementace}
 Úprava algoritmu pro paralelizaci, využité prostředky pro paralelizaci~\ref{appendix:ProgramUsage}
@@ -101,7 +108,23 @@ Kvůli tomuto problému jsme také experimentovali s~tím, že se maximální ne
 \section{Závěr}
 
 \begin{thebibliography}{99}
-\bibitem{demel} TODO demel
+
+\bibitem{demel}
+  Demel, Jiří.
+  "Grafy a jejich aplikace",
+  Praha: nakladatelství Academia, 2002.
+
+\bibitem{robson}
+  Robson, John Michael.
+  "Algorithms for maximum independent sets."
+  \emph{Journal of Algorithms} 7.3 (1986): 425-440
+
+\bibitem{fomin}
+  Fomin, Fedor V., Fabrizio Grandoni, and Dieter Kratsch.
+  "Measure and conquer: a simple O (2 0.288 n) independent set algorithm."
+  \emph{Proceedings of the seventeenth annual ACM-SIAM symposium on Discrete algorithm.}
+   ACM, 2006.
+
 \end{thebibliography}
 
 \appendix
