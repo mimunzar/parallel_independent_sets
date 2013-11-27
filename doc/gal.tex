@@ -16,7 +16,7 @@
 \usepackage{booktabs}
 \usepackage[table,usenames,dvipsnames,svgnames]{xcolor}
 \usepackage[unicode,hyperindex,plainpages=false,pdftex]{hyperref}
-    
+\usepackage{algpseudocode}   
     \hypersetup{
           colorlinks=true, 
           linkcolor=BrickRed, 
@@ -44,6 +44,9 @@ Jakub Sochor\\
 \newfloat{algorithm}{h}{lop}
 \floatname{algorithm}{Algoritmus}
 
+\renewcommand{\algorithmicrequire}{\textbf{Vstup:}}
+\renewcommand{\algorithmicensure}{\textbf{Výstup:}}
+\renewcommand{\algorithmiccomment}[1]{// #1}
 
 \begin{document}
 \maketitle
@@ -62,13 +65,37 @@ Hledání maximálních nezávislých množin je NP-těžšký problém. Jedinou
 
 Často se v aplikacích  setkáváme s potřebou určit nezávislost grafu. Nezávislost grafu \(G\) je rovna velikosti nejpočetnější nezávislé množiny a značí se \(\alpha(G)\). Tato množina je zároveń množinou maximální, ale naopak to neplatí. Jiným požadavkem může být například nalezení nejdražší nezávislé množiny ve smyslu ohodnocení vrcholů.
 
-Pojmy úzce související s maximálními nezávislými množinami jsou klika a klikovost grafu. Klika je maximální úplný podgraf grafu \(G\) a odpovídá nějaké maximální nezavislé množině doplńkového grafu \(-G\). Klikovost grafu je pak počet vrcholů v největší klice.
+Pojmy úzce související s maximálními nezávislými množinami jsou klika grafu a dominující podmnožina. Klika je maximální úplný podgraf grafu \(G\) a odpovídá nějaké maximální nezavislé množině doplńkového grafu \(-G\). Dominující podmnožina vrcholů grafu jsou ty vrcholy, jež se svými sousedy pokrávají celý graf. Tedy každá maximální nezávislá množina je zároveń množinou dominující.
 
 \subsection{Popis použitého algoritmu}
-Implementovaný algoritmus jsme převzali z \cite{demel}. Jeho základem je metoda zpětného navracení. Algoritmus lze upravit pro hledání nejpočetnější nebo nejdražší nezávislé množiny. Jeho složitost je \(O(??)\), kde \(n\) je počet uzlů grafu.
+Implementovaný algoritmus jsme převzali z \cite{demel}. Jeho základem je metoda zpětného navracení. Složitost je \(O(2^{n/3})\), kde \(n\) je počet uzlů grafu \cite{tarjan}. Algoritmus lze upravit pro hledání nejpočetnější nebo nejdražší nezávislé množiny. Během svého běhu si udržuje 3 navzájem disjunktní množiny vrcholů \(R, N, S\). \(R\) je nezávislá množina vrcholů. Množina \(N\) obsahuje vrcholy, které nebyli přidány \(R\). \(S\) obsahuje vrcholy, které již tvořily maximální nezávislou množinu.
 
-% TODO: jak to je s nasi slozitosti?
-Tady bude algoritmus
+\begin{algorithm}
+\caption{Hledání maximálních nezávislých množin}
+\begin{algorithmic}
+
+\While{1}
+                          
+  \If {$N_k \neq \emptyset \lor S_K \neq \emptyset$}
+    \If{$N_k \neq \emptyset$}
+      \If{$ \exists y : V(y) \cap S_k \neq \emptyset $}
+        \State{reduce $\leftarrow$ FALSE}
+      \EndIf    
+    \EndIf
+  \EndIf
+  
+  \Comment{Rozšíření nebo zkrácení nezávislé množiny}
+  \If {reduce = FALSE}
+    \State $k \leftarrow k+1$
+    \State $R \leftarrow \{x\} \in N$
+  \Else
+  
+  \EndIf
+
+
+\EndWhile 
+\end{algorithmic}
+\end{algorithm}
 
 Jiným řešením pro nalezení maximálních nezávislých množin je například Robsonův algoritmus se složitostí \(O(2^{0.296n})\) \cite{robson}. Fomin dosáhl složitosti \(O(2^{0.288n})\) pomocí metody rozděl a panuj \cite{fomin}. Tyto algoritmy využívají heuristiky pro vyloučení některých množin z prohledávání a pro výběr uzlu.  
 
@@ -124,6 +151,11 @@ Kvůli tomuto problému jsme také experimentovali s~tím, že se maximální ne
   "Measure and conquer: a simple O (2 0.288 n) independent set algorithm."
   \emph{Proceedings of the seventeenth annual ACM-SIAM symposium on Discrete algorithm.}
    ACM, 2006.
+
+\bibitem{tarjan}
+  Tarjan, Robert Endre, and Anthony E. Trojanowski.
+  "Finding a maximum independent set."
+  \emph{SIAM Journal on Computing} 6.3 (1977): 537-546.
 
 \end{thebibliography}
 
