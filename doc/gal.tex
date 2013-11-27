@@ -16,6 +16,7 @@
 \usepackage{booktabs}
 \usepackage[table,usenames,dvipsnames,svgnames]{xcolor}
 \usepackage[unicode,hyperindex,plainpages=false,pdftex]{hyperref}
+\usepackage{algorithm}
 \usepackage{algpseudocode}   
     \hypersetup{
           colorlinks=true, 
@@ -42,10 +43,9 @@ Jakub Sochor\\
 \newtheorem{veta}{Věta}
 \newtheorem{priklad}{Příklad}
 \newfloat{algorithm}{h}{lop}
-\floatname{algorithm}{Algoritmus}
 
-\renewcommand{\algorithmicrequire}{\textbf{Vstup:}}
-\renewcommand{\algorithmicensure}{\textbf{Výstup:}}
+
+\floatname{algorithm}{Algoritmus}
 \renewcommand{\algorithmiccomment}[1]{// #1}
 
 \begin{document}
@@ -57,9 +57,11 @@ Jakub Sochor\\
 
 \section{Maximální nezávislé množiny}
 
-Množina vrcholů grafu je nezávilá, když žádné dva vrcholy v této množině nejsou spojeny hranou. Tato množina je maximální, pokud k ní už nelze přidat žádný vrchol a zároveń dodržet podmínku nezávislosti.
+Množina vrcholů neorientovaného grafu \(G(V,E)\) je nezávilá, když žádné dva vrcholy v této množině nejsou spojeny hranou. Tato množina je maximální, pokud k ní už nelze přidat žádný vrchol a zároveń dodržet podmínku nezávislosti.
 
-\todo{formálně}
+\begin{equation*}
+\{\forall M,N : M,N \in V \land (M,N) \notin E \}
+\end{equation*}
 
 Typickou úlohou pro nalezení nezávislých množin je hledání prvků, které spolu mohou nějakým způsobem fungovat. Mohou to být například procesy počítače, jež pracují nad společnými daty. Procesy jsou tomto případě vrcholy grafu a budou spojeny hranou v případě, že pro svůj běh potřebují stejná data. Nezávislá množina potom bude obsahovat ty procesy, které mohou běžet současně.
 
@@ -70,32 +72,54 @@ Hledání maximálních nezávislých množin je NP-těžšký problém. Jedinou
 Pojmy úzce související s maximálními nezávislými množinami jsou klika grafu a dominující podmnožina. Klika je maximální úplný podgraf grafu \(G\) a odpovídá nějaké maximální nezavislé množině doplńkového grafu \(-G\). Dominující podmnožina vrcholů grafu jsou ty vrcholy, jež se svými sousedy pokrávají celý graf. Tedy každá maximální nezávislá množina je zároveń množinou dominující.
 
 \subsection{Popis použitého algoritmu}
-Implementovaný algoritmus jsme převzali z \cite{demel}. Jeho základem je metoda zpětného navracení. Složitost je \(O(2^{n/3})\), kde \(n\) je počet uzlů grafu \cite{tarjan}. Algoritmus lze upravit pro hledání nejpočetnější nebo nejdražší nezávislé množiny. Během svého běhu si udržuje 3 navzájem disjunktní množiny vrcholů \(R, N, S\). \(R\) je nezávislá množina vrcholů. Množina \(N\) obsahuje vrcholy, které nebyli přidány \(R\). \(S\) obsahuje vrcholy, které již tvořily maximální nezávislou množinu.
+Implementovaný algoritmus jsme převzali z \cite{demel}. Jeho základem je metoda zpětného navracení. Složitost je \(O(2^{n/3})\), kde \(n\) je počet uzlů grafu \cite{tarjan}. Algoritmus lze upravit pro hledání nejpočetnější nebo nejdražší nezávislé množiny. Během svého běhu si udržuje 3 navzájem disjunktní množiny vrcholů \(R, N, S\). \(R\) je nezávislá množina vrcholů. Množina \(N\) obsahuje vrcholy, které nebyli přidány do \(R\). \(S\) obsahuje vrcholy, které již tvořily maximální nezávislou množinu.
 
-\begin{algorithm}
-\caption{Hledání maximálních nezávislých množin}
+\begin{algorithm}[H]
+\caption{sekvenční hledání maximálních nezávislých množin}
 \begin{algorithmic}
-
-\While{1}
-                          
+\Function{seqIndSets}{Graph $G $}
+\State \Comment inicializace
+\State $k \leftarrow 0$
+\State $R_k, S_k \leftarrow \emptyset$
+\State $N_k \leftarrow V$
+\State \Comment rozšíř R
+\State $x \in N_k$
+\State $k \leftarrow k+1$
+\State $R_k \leftarrow \{x\}$
+\State $N_k \leftarrow N_{k-1} \setminus ({x} \cup Adj(x))$
+\While{True}
+  \State $reduce \leftarrow$ True
+  \State \Comment test zda-li je R maximální                           
   \If {$N_k \neq \emptyset \lor S_K \neq \emptyset$}
+    \State \Comment test možnosti zvětšování R
     \If{$N_k \neq \emptyset$}
-      \If{$ \exists y : V(y) \cap S_k \neq \emptyset $}
-        \State{reduce $\leftarrow$ FALSE}
+      \State \Comment test zda-li může být R maximální
+      \If{$ \forall y \in S_k : \ V(y) \cap S_k \neq \emptyset $}
+        \State $reduce \leftarrow$ False
       \EndIf    
     \EndIf
-  \EndIf
-  
-  \Comment{Rozšíření nebo zkrácení nezávislé množiny}
-  \If {reduce = FALSE}
-    \State $k \leftarrow k+1$
-    \State $R \leftarrow \{x\} \in N$
   \Else
-  
+    \State $independent\_sets \leftarrow independent\_sets \cap {R_k}$
+  \EndIf  
+  \If {$reduce =$ False}
+    \State \Comment rozšiř R
+    \State $x \in N_k$
+    \State $k \leftarrow k+1$
+    \State $R_k \leftarrow R_{k-1} \cup {x}$    
+    \State $N_k \leftarrow N_{k-1} \setminus ({x} \cup Adj(x))$
+    \State $S_k \leftarrow S_{k-1} \setminus {x}$
+  \Else
+    \State \Comment navrat
+    \If {$k=0$}
+      \State \Return $independent\_sets$
+    \EndIf
+    \State $x \in R_k$
+    \State $k \leftarrow k - 1$
+    \State $N_k \leftarrow N_k \setminus {x}$
+    \State $S_k \leftarrow S_k \cup {x}$
   \EndIf
-
-
-\EndWhile 
+\EndWhile
+\EndFunction
 \end{algorithmic}
 \end{algorithm}
 
