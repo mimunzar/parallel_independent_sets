@@ -59,6 +59,8 @@ Jakub Sochor\\
 
 Množina vrcholů grafu je nezávilá, když žádné dva vrcholy v této množině nejsou spojeny hranou. Tato množina je maximální, pokud k ní už nelze přidat žádný vrchol a zároveń dodržet podmínku nezávislosti.
 
+\todo{formálně}
+
 Typickou úlohou pro nalezení nezávislých množin je hledání prvků, které spolu mohou nějakým způsobem fungovat. Mohou to být například procesy počítače, jež pracují nad společnými daty. Procesy jsou tomto případě vrcholy grafu a budou spojeny hranou v případě, že pro svůj běh potřebují stejná data. Nezávislá množina potom bude obsahovat ty procesy, které mohou běžet současně.
 
 Hledání maximálních nezávislých množin je NP-těžšký problém. Jedinou známou možností jak tento problém řešit je procházet všechny podmnožiny množiny vrcholů a určovat zda je zvolená množina maximální nezávislá. Jelikož množství podmnožin roste exponenciálně s počtem vrcholů je toto řešení pro velké grafy náročné.
@@ -136,20 +138,16 @@ Kvůli tomuto problému jsme také experimentovali s~tím, že se maximální ne
 
 \begin{thebibliography}{99}
 
-\bibitem{demel}
-  Demel, Jiří.
-  "Grafy a jejich aplikace",
-  Praha: nakladatelství Academia, 2002.
+\bibitem{demel} 
+    DEMEL, Jiří. \emph{Grafy a jejich aplikace}. Vyd. 1. Praha: Academia, 2002, 257 s. ISBN 80-200-0990-6.
 
 \bibitem{robson}
-  Robson, John Michael.
-  "Algorithms for maximum independent sets."
-  \emph{Journal of Algorithms} 7.3 (1986): 425-440
+ROBSON, J.M. \emph{Algorithms for maximum independent sets}. Journal of Algorithms. 1986, vol. 7, issue 3, s. 425-440.
 
 \bibitem{fomin}
-  Fomin, Fedor V., Fabrizio Grandoni, and Dieter Kratsch.
-  "Measure and conquer: a simple O (2 0.288 n) independent set algorithm."
-  \emph{Proceedings of the seventeenth annual ACM-SIAM symposium on Discrete algorithm.}
+  FOMIN, Fedor V., FABRIZIO Grandoni, and DIETER Kratsch.
+  \emph{Measure and conquer: a simple O($2^{0.288n}$) independent set algorithm}.
+  Proceedings of the seventeenth annual ACM-SIAM symposium on Discrete algorithm.
    ACM, 2006.
 
 \bibitem{tarjan}
