@@ -70,7 +70,7 @@ Hledání maximálních nezávislých množin je NP-těžšký problém. Jedinou
 Pojmy úzce související s maximálními nezávislými množinami jsou klika grafu a dominující podmnožina. Klika je maximální úplný podgraf grafu \(G\) a odpovídá nějaké maximální nezavislé množině doplńkového grafu \(-G\). Dominující podmnožina vrcholů grafu jsou ty vrcholy, jež se svými sousedy pokrávají celý graf. Tedy každá maximální nezávislá množina je zároveń množinou dominující.
 
 \subsection{Popis použitého algoritmu}
-Implementovaný algoritmus jsme převzali z \cite{demel}. Jeho základem je metoda zpětného navracení. Složitost je \(O(2^{n/3})\), kde \(n\) je počet uzlů grafu \cite{tarjan}. Algoritmus lze upravit pro hledání nejpočetnější nebo nejdražší nezávislé množiny. Během svého běhu si udržuje 3 navzájem disjunktní množiny vrcholů \(R, N, S\). \(R\) je nezávislá množina vrcholů. Množina \(N\) obsahuje vrcholy, které nebyli přidány \(R\). \(S\) obsahuje vrcholy, které již tvořily maximální nezávislou množinu.
+Implementovaný algoritmus jsme převzali z \cite{demel}. Jeho základem je metoda zpětného navracení. Složitost je \(O(2^{n/3})\) \todo{Zkontrolovat složitost}, kde \(n\) je počet uzlů grafu \cite{tarjan}. Algoritmus lze upravit pro hledání nejpočetnější nebo nejdražší nezávislé množiny. Během svého běhu si udržuje 3 navzájem disjunktní množiny vrcholů \(R, N, S\). \(R\) je nezávislá množina vrcholů. Množina \(N\) obsahuje vrcholy, které nebyli přidány \(R\). \(S\) obsahuje vrcholy, které již tvořily maximální nezávislou množinu.
 
 \begin{algorithm}
 \caption{Hledání maximálních nezávislých množin}
