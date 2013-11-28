@@ -57,12 +57,7 @@ Jakub Sochor\\
 
 \section{Maximální nezávislé množiny}
 
-Množina vrcholů neorientovaného grafu \(G(V,E)\) je nezávilá, když žádné dva vrcholy v této množině nejsou spojeny hranou. Tato množina je maximální, pokud k ní už nelze přidat žádný vrchol a zároveń dodržet podmínku nezávislosti. \todo{formalne}
-
-\begin{align*}
-&S(V^{'}, E) \subseteq G(V, E) \\
-&V^{'} = \{\forall M,N \mid M,N \in V^{'} \land (M,N) \notin E \}
-\end{align*}
+Množina vrcholů $S \subseteq V$ neorientovaného grafu $G(V,E)$ je nezávilá, když pro každé dva vrcholy $\forall M,N \in S$ platí, že nejsou spojeny hranou $(M,N) \notin E$ . Dále definujeme množinu $S$ jako maximální právě když $Adj(S) \cup S = V$, kde $Adj(S)$ značí množinu sousedních uzlů k uzlům z $S$.
 
 Typickou úlohou pro nalezení nezávislých množin je hledání prvků, které spolu mohou nějakým způsobem fungovat. Mohou to být například procesy počítače, jež pracují nad společnými daty. Procesy jsou tomto případě vrcholy grafu a budou spojeny hranou v případě, že pro svůj běh potřebují stejná data. Nezávislá množina potom bude obsahovat ty procesy, které mohou běžet současně.
 
