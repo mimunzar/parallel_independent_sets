@@ -57,11 +57,12 @@ Jakub Sochor\\
 
 \section{Maximální nezávislé množiny}
 
-Množina vrcholů neorientovaného grafu \(G(V,E)\) je nezávilá, když žádné dva vrcholy v této množině nejsou spojeny hranou. Tato množina je maximální, pokud k ní už nelze přidat žádný vrchol a zároveń dodržet podmínku nezávislosti.
+Množina vrcholů neorientovaného grafu \(G(V,E)\) je nezávilá, když žádné dva vrcholy v této množině nejsou spojeny hranou. Tato množina je maximální, pokud k ní už nelze přidat žádný vrchol a zároveń dodržet podmínku nezávislosti. \todo{formalne}
 
-\begin{equation*}
-\{\forall M,N : M,N \in V \land (M,N) \notin E \}
-\end{equation*}
+\begin{align*}
+&S(V^{'}, E) \subseteq G(V, E) \\
+&V^{'} = \{\forall M,N \mid M,N \in V^{'} \land (M,N) \notin E \}
+\end{align*}
 
 Typickou úlohou pro nalezení nezávislých množin je hledání prvků, které spolu mohou nějakým způsobem fungovat. Mohou to být například procesy počítače, jež pracují nad společnými daty. Procesy jsou tomto případě vrcholy grafu a budou spojeny hranou v případě, že pro svůj běh potřebují stejná data. Nezávislá množina potom bude obsahovat ty procesy, které mohou běžet současně.
 
@@ -76,6 +77,7 @@ Implementovaný algoritmus jsme převzali z \cite{demel}. Jeho základem je meto
 
 \begin{algorithm}[H]
 \caption{sekvenční hledání maximálních nezávislých množin}
+\label{seq_independent_sets}
 \begin{algorithmic}
 \Function{seqIndSets}{Graph $G $}
 \State \Comment inicializace
@@ -94,7 +96,7 @@ Implementovaný algoritmus jsme převzali z \cite{demel}. Jeho základem je meto
     \State \Comment test možnosti zvětšování R
     \If{$N_k \neq \emptyset$}
       \State \Comment test zda-li může být R maximální
-      \If{$ \forall y \in S_k : \ V(y) \cap S_k \neq \emptyset $}
+      \If{$ \forall y \in S_k : \ Adj(y) \cap S_k \neq \emptyset $}
         \State $reduce \leftarrow$ False
       \EndIf    
     \EndIf
@@ -126,6 +128,9 @@ Implementovaný algoritmus jsme převzali z \cite{demel}. Jeho základem je meto
 Jiným řešením pro nalezení maximálních nezávislých množin je například Robsonův algoritmus se složitostí \(O(2^{0.296n})\) \cite{robson}. Fomin dosáhl složitosti \(O(2^{0.288n})\) pomocí metody rozděl a panuj \cite{fomin}. Tyto algoritmy využívají heuristiky pro vyloučení některých množin z prohledávání a pro výběr uzlu.  
 
 \section{Implementace}
+
+Implementovaný algoritmus~\ref{seq_independent_sets} využívá vzájemné disjunkce množin $R,S,N$. Tato vlastnost dovoluje uchovat informace o příslušnosti uzlu grafu k uvedeným množinám v matici. Řádky matice představují stav nezávislé množiny v nějakém kroku $k$ metody zpětného navracení. 
+                                                           
 Úprava algoritmu pro paralelizaci, využité prostředky pro paralelizaci~\ref{appendix:ProgramUsage}
 
 
