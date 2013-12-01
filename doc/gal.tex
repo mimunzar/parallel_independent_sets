@@ -76,7 +76,7 @@ Mějme neorientovaný graf G(V, E). Podmnožinu $S \subseteq V$ nazveme maximál
 
 Typickou úlohou pro nalezení nezávislých množin je hledání prvků, které spolu mohou nějakým způsobem fungovat. Mohou to být například procesy počítače, jež pracují nad společnými daty. Procesy jsou tomto případě vrcholy grafu a budou spojeny hranou v případě, že pro svůj běh potřebují stejná data. Nezávislá množina potom bude obsahovat ty procesy, které mohou běžet současně.
 
-Hledání maximálních nezávislých množin je NP-těžký \todo{Není NP-complete?} problém. Jedinou známou možností jak tento problém řešit je procházet všechny podmnožiny množiny vrcholů a určovat zda je zvolená množina maximální nezávislá. Jelikož množství podmnožin roste exponenciálně s počtem vrcholů je toto řešení pro velké grafy náročné.
+Hledání maximálních nezávislých množin je NP-úplný problém~\cite{tarjan}. Jedinou známou možností jak tento problém řešit je procházet všechny podmnožiny množiny vrcholů a určovat zda je zvolená množina maximální nezávislá. Jelikož množství podmnožin roste exponenciálně s počtem vrcholů je toto řešení pro velké grafy náročné.
 
 Často se v aplikacích  setkáváme s potřebou určit nezávislost grafu. Nezávislost grafu \(G\) je rovna velikosti nejpočetnější nezávislé množiny a značí se \(\alpha(G)\). Tato množina je zároveň množinou maximální, ale naopak to neplatí, tedy každá maximální nezávislá množina není nejpočetnější nezávislou množinou. Jiným požadavkem může být například nalezení nejdražší nezávislé množiny ve smyslu ohodnocení vrcholů.
 
@@ -90,56 +90,43 @@ Implementovaný algoritmus jsme převzali z \cite{demel}. Jeho základem je meto
 \label{seq_independent_sets}
 \begin{algorithmic}
 \Function{seqIndSets}{Graph $G $}
-\State \Comment inicializace
 \State $k \leftarrow 0$
 \State $R_k, S_k \leftarrow \emptyset$
 \State $N_k \leftarrow V$
-\State \Comment rozšíř R
-\State $x \in N_k$
-\State $k \leftarrow k+1$
-\State $R_k \leftarrow \{x\}$
-\State $N_k \leftarrow N_{k-1} \setminus ({x} \cup Adj(x))$
-\While{True}
-  \State $reduce \leftarrow$ True
+\While{True}  
   \State \Comment test zda-li je R maximální                           
-  \If {$N_k \neq \emptyset \lor S_K \neq \emptyset$}
-    \State \Comment test možnosti zvětšování R
-    \If{$N_k \neq \emptyset$}
-      \State \Comment test zda-li může být R maximální
-      \If{$ \forall y \in S_k : \ Adj(y) \cap S_k \neq \emptyset $}
-        \State $reduce \leftarrow$ False
-      \EndIf    
-    \EndIf
-  \Else
+  \If {$N_k = \emptyset \land S_K = \emptyset$}
     \State $independent\_sets \leftarrow independent\_sets \cup \{R_k\}$
-  \EndIf  
-  \If {$reduce =$ False}
+  \EndIf    
+  \State \Comment test možností zvětšování R
+  \If{$N_k = \emptyset \lor \exists y \in S_k :  Adj(y) \cap S_k = \emptyset$}
+    \If {$k=0$}
+      \State \Return $independent\_sets$
+    \EndIf
+    \State \Comment návrat
+    \State $x \in R_k$
+    \State $k \leftarrow k - 1$
+    \State $N_k \leftarrow N_k \setminus {x}$
+    \State $S_k \leftarrow S_k \cup {x}$   
+  \Else
     \State \Comment rozšiř R
     \State $x \in N_k$
     \State $k \leftarrow k+1$
     \State $R_k \leftarrow R_{k-1} \cup {x}$    
     \State $N_k \leftarrow N_{k-1} \setminus ({x} \cup Adj(x))$
-    \State $S_k \leftarrow S_{k-1} \setminus {x}$
-  \Else
-    \State \Comment navrat
-    \If {$k=0$}
-      \State \Return $independent\_sets$
-    \EndIf
-    \State $x \in R_k$
-    \State $k \leftarrow k - 1$
-    \State $N_k \leftarrow N_k \setminus {x}$
-    \State $S_k \leftarrow S_k \cup {x}$
+    \State $S_k \leftarrow S_{k-1} \setminus {x}$     
   \EndIf
 \EndWhile
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
 
+
 Jiným řešením pro nalezení maximálních nezávislých množin je například Robsonův algoritmus se složitostí \(O(2^{0.296n})\) \cite{robson}. Fomin dosáhl složitosti \(O(2^{0.288n})\) pomocí metody rozděl a panuj \cite{fomin}. Tyto algoritmy využívají heuristiky pro vyloučení některých množin z prohledávání a pro výběr uzlu.  
 
 \section{Implementace}
 
-Implementovaný algoritmus~\ref{seq_independent_sets} využívá vzájemné disjunkce množin $R,S,N$. Tato vlastnost dovoluje uchovat informace o příslušnosti uzlu grafu k uvedeným množinám v matici. Řádky matice představují stav nezávislé množiny v nějakém kroku $k$ metody zpětného navracení. 
+Námi implementovaný algoritmus~\ref{seq_independent_sets} využívá vzájemné disjunkce množin $R,S,N$. Tato vlastnost dovoluje uchovat informace o příslušnosti uzlu grafu k uvedeným množinám v matici. Řádky matice představují stav nezávislé množiny v nějakém kroku $k$ metody zpětného navracení. 
                                                            
 Úprava algoritmu pro paralelizaci, využité prostředky pro paralelizaci~\ref{appendix:ProgramUsage}
 
