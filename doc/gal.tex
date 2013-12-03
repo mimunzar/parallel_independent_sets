@@ -28,6 +28,7 @@
 
 
 \newcommand{\todo}[1]{\textcolor{red}{[[TODO: #1]]}}
+\newcommand{\setHelper}[1]{\left\lbrace #1 \right\rbrace}
 
 \newlength{\skipeqarray}
 \setlength{\skipeqarray}{0.4cm}
@@ -53,6 +54,9 @@ Jakub Sochor\\
 \maketitle
 
 \section{Úvod}
+Tento dokument popisuje projekt zabývající se paralelním algoritmem pro hledání maximálních nezávislých množin v grafech. Cílem tohoto projektu je paralelizovat sekvenční algoritmus a vyhodnotit dosažené zrychlení.
+
+Nejprve budou popsány maximální nezávislé množiny a sekvenční algoritmus pro jejich hledání, dále bude popsán nastíněn paralelní algoritmus a jeho implementace a v neposlední řadě je v kapitole \ref{sec:Evaluation} popsáno vyhodncení dosaženého zrychlení pomocí paralelního algoritmu.
 
 
 
@@ -83,7 +87,7 @@ Hledání maximálních nezávislých množin je NP-úplný problém~\cite{tarja
 Pojmy úzce související s maximálními nezávislými množinami jsou klika grafu a dominující podmnožina. Klika je maximální úplný podgraf grafu \(G\) a odpovídá nějaké maximální nezavislé množině doplńkového grafu \(-G\). Dominující podmnožina vrcholů grafu jsou ty vrcholy, jež se svými sousedy pokrávají celý graf. Tedy každá maximální nezávislá množina je zároveń množinou dominující.
 
 \subsection{Popis použitého algoritmu}
-Implementovaný algoritmus jsme převzali z \cite{demel}. Jeho základem je metoda zpětného navracení. Složitost je \(O(2^{n/3})\) \todo{Zkontrolovat složitost}, kde \(n\) je počet uzlů grafu \cite{tarjan}. Algoritmus lze upravit pro hledání nejpočetnější nebo nejdražší nezávislé množiny. Během svého běhu si udržuje 3 navzájem disjunktní množiny vrcholů \(R, N, S\). \(R\) je nezávislá množina vrcholů. Množina \(N\) obsahuje vrcholy, které zatím nebyly přidány \(R\). \(S\) obsahuje vrcholy, jejichž přidání do množiny $R$ obsahující nezávislou množinu již bylo vyzkoušeno.
+Implementovaný algoritmus jsme převzali z \cite{demel}. Jeho základem je metoda zpětného navracení. Složitost je \(O(2^{n/3})\), kde \(n\) je počet uzlů grafu \cite{tarjan}. Algoritmus lze upravit pro hledání nejpočetnější nebo nejdražší nezávislé množiny. Během svého běhu si udržuje 3 navzájem disjunktní množiny vrcholů \(R, N, S\). \(R\) je nezávislá množina vrcholů. Množina \(N\) obsahuje vrcholy, které zatím nebyly přidány \(R\). \(S\) obsahuje vrcholy, jejichž přidání do množiny $R$ obsahující nezávislou množinu již bylo vyzkoušeno.
 
 \begin{algorithm}[H]
 \caption{sekvenční hledání maximálních nezávislých množin}
@@ -99,22 +103,22 @@ Implementovaný algoritmus jsme převzali z \cite{demel}. Jeho základem je meto
     \State $independent\_sets \leftarrow independent\_sets \cup \{R_k\}$
   \EndIf    
   \State \Comment test možností zvětšování R
-  \If{$N_k = \emptyset \lor \exists y \in S_k :  Adj(y) \cap S_k = \emptyset$}
+  \If{$\exists y \in S_k :  Adj(y) \cap N_k = \emptyset$}
     \If {$k=0$}
       \State \Return $independent\_sets$
     \EndIf
     \State \Comment návrat
     \State $x \in R_k$
     \State $k \leftarrow k - 1$
-    \State $N_k \leftarrow N_k \setminus {x}$
-    \State $S_k \leftarrow S_k \cup {x}$   
+    \State $N_k \leftarrow N_k \setminus \setHelper{x}$
+    \State $S_k \leftarrow S_k \cup \setHelper{x}$   
   \Else
     \State \Comment rozšiř R
     \State $x \in N_k$
     \State $k \leftarrow k+1$
-    \State $R_k \leftarrow R_{k-1} \cup {x}$    
-    \State $N_k \leftarrow N_{k-1} \setminus ({x} \cup Adj(x))$
-    \State $S_k \leftarrow S_{k-1} \setminus {x}$     
+    \State $R_k \leftarrow R_{k-1} \cup \setHelper{x}$    
+    \State $N_k \leftarrow N_{k-1} \setminus (\setHelper{x} \cup Adj(x))$
+    \State $S_k \leftarrow S_{k-1} \setminus \setHelper{x}$     
   \EndIf
 \EndWhile
 \EndFunction
@@ -125,13 +129,56 @@ Implementovaný algoritmus jsme převzali z \cite{demel}. Jeho základem je meto
 Jiným řešením pro nalezení maximálních nezávislých množin je například Robsonův algoritmus se složitostí \(O(2^{0.296n})\) \cite{robson}. Fomin dosáhl složitosti \(O(2^{0.288n})\) pomocí metody rozděl a panuj \cite{fomin}. Tyto algoritmy využívají heuristiky pro vyloučení některých množin z prohledávání a pro výběr uzlu.  
 
 \section{Implementace}
+Tato kapitola popisuje implementovaný paralelní algoritmus, který je založen na algoritmu \ref{seq_independent_sets}. Program je implementován v C++ a návod pro překlad a použití programu je uvedeno v příloze \ref{appendix:ProgramUsage}.
 
 Námi implementovaný algoritmus~\ref{seq_independent_sets} využívá vzájemné disjunkce množin $R,S,N$. Tato vlastnost dovoluje uchovat informace o příslušnosti uzlu grafu k uvedeným množinám v matici. Řádky matice představují stav nezávislé množiny v nějakém kroku $k$ metody zpětného navracení. 
                                                            
-Úprava algoritmu pro paralelizaci, využité prostředky pro paralelizaci~\ref{appendix:ProgramUsage}
 
 
-\section{Vyhodnocení}
+\subsection{Použitý paralelní algoritmus}
+Pro paralelní běh algoritmu pro hledání maximálních nezávislých množin jsme použili mírně upravený algoritmus \ref{seq_independent_sets}. Tato úprava spočívá především v tom, že algoritmu je předána již počáteční obsah množin $N_0, S_0, R_0$ a také je již proveden výběr uzlu $v \in V$ o který bude rozšířena množina $R_1$. 
+
+To, že je algoritmu předán tento uzel $v$ je možné výhodně využít pro paralelní běh. Protože na nulté úrovni zanoření backtrackingu je možné určit následný obsah množin $S_0, R_0$ a $N_0$. Tyto množiny totiž budou změněny způsobem, že uzel $v$ bude vyjmut z množiny $N_0$ a přidán do množiny $S_0$.
+
+Samotný paralelní algoritmus \ref{par_independent_sets} lze nalézt níže, přičemž funkce $seqIndSets$ je úpravená verze sekvenčního algoritmu pro hledání maximálních nezávislých množin a argument $independent\_sets$ je množina, do které upravený sekvenční algoritmus přidává nalezené maximální nezávislé množiny. 
+
+\begin{algorithm}[H]
+\caption{paralelní hledání maximálních nezávislých množin, hlavní vlákno}
+\label{par_independent_sets}
+\begin{algorithmic}
+\Function{parIndSets}{Graph $G$}
+\State $independent\_sets \leftarrow \emptyset$
+\State $N_0 \leftarrow V$
+\State $R_0, S_0 \leftarrow \emptyset$
+\For{$v \in V$}  
+    \State $seqIndSets(G, v, N_0, R_0, S_0, independent\_sets)$ in parallel
+    \State $N_0 \leftarrow N_0 \setminus \setHelper{v}$
+    \State $S_0 \leftarrow S_0 \cup \setHelper{v}$
+    \If{$\exists y \in S_k :  Adj(y) \cap N_k = \emptyset$}
+        \State \textbf{break}
+    \EndIf
+\EndFor
+\State \Return $independent\_sets$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+
+\subsection{Použité prostředky pro paralelizaci}
+Pro implementaci paralelního algoritmu jsme využili třídy \texttt{thread} z nového standardu C++11. Z tohoto důvodu také náš program lze přeložit pouze s novějšimi verzemi překladeče obsahující ve standardní knihovně již tuto třídu. 
+
+Během průběhu algorimu je omezen maximální počet paralelních vláken. Tento počet je roven $N+1$, pričemž $N$ je hodnota, kterou vrací statická metoda \texttt{thread:: hardware\_concurrency} a minimálně 2. Práce těchto vláken je rozdělena následujícím způsobem:
+\begin{itemize}
+    \item Jedno hlavní pouští algoritmus od úrovně $k=1$ a předává práci podřízeným vláknům, které již provedou algoritmus hledání maximálních nezávislých množin.
+    \item $N$ dalších vláken již provádí hledání maximálních nezávislých množin.
+\end{itemize}
+
+Výsledné nalezené maximální nezávislé množiny jsou po nalezení přidávány do sdíleného vektoru, obsahujícího všechny nalezené maximální nezávislé množiny. Přístup do tohoto vektoru je kritickou sekcí v běhu algoritmu a tudíž je pomocí zámku \texttt{mutex} z C++11 zabráněno současnému přístupu více vláken.
+
+
+
+
+\section{Vyhodnocení} \label{sec:Evaluation}
 Pro účely vyhodnocení zrychlení paralelní verze algoritmu oproti sekvenční byly vytvořeny skripty, které generují náhodné grafy se zadaným počtem vrcholů a~hran ve formátu GraphML. 
 
 Jednotlivé grafy jsou rozděleny do skupin podle toho, kolik procent maximálního možného počtu hran obsahují. K~tomuto rozdělení jsme přistoupili zejména proto, aby čas běhu algoritmu v~jedné skupině grafů byl rostoucí s~počtem vrcholů daného zpracovávaného grafu, jelikož počet hran grafu významně ovlivňuje také počet maximálních nezávislých množin v~daném grafu a~tudíž i~dobu běhu. 
@@ -141,9 +188,10 @@ Celé vyhodnocování bylo prováděno na třech skupinách grafů po 31 grafech
     s = \frac{t_S}{t_P} \label{eq:Speedup}
 \end{equation}
 
-Testování bylo prováděno na počítači s procesorem AMD Phenom X4 945, který má 4 fyzická jádra běžící na frekvenci 3\,GHz a~4\,GB RAM. Během běhu programu nebyl na počítači puštěn žádný další výpočetně náročný proces a~pro měření času bylo využito \texttt{high\_resolution\_clock} ze standardu C++11. \todo{přidat přesnost???}
+Testování bylo prováděno na počítači s procesorem AMD Phenom X4 945, který má 4 fyzická jádra běžící na frekvenci 3\,GHz a~4\,GB RAM. Během běhu programu nebyl na počítači puštěn žádný další výpočetně náročný proces a~pro měření času bylo využito \texttt{high\_resolution\_clock} ze standardu C++11.
 
-Grafy vytvořené z~naměřených výsledků lze vidět na obrázku~\ref{fig:SpeedResults} a~všechny naměřené časy a~určené zrychlení jsou obsaženy v~příloze~\ref{appendix:RawResults}.
+Grafy vytvořené z~naměřených výsledků lze vidět na obrázku~\ref{fig:SpeedResults} a~všechny naměřené časy a~určené zrychlení jsou obsaženy v~příloze~\ref{appendix:RawResults}. Samotné soubory s grafy na kterých vyhodnocování bylo prováděno lze nalézt na adrese \url{http://public.sochor.me/gal\_eval\_graphs.tar.bz2
+}.
 
 \begin{figure}[p]
     \centering
@@ -161,6 +209,8 @@ Ovšem jak si lze z~grafů všimnout, tak s~narůstajícím počtem vrcholů se 
 Kvůli tomuto problému jsme také experimentovali s~tím, že se maximální nezávislé množiny nebudou ukládat do paměti, ale rovnou vypisovat. S~tímto přístupem jsme ovšem dosahovali ještě horších výsledků, jelikož program trávil podstatně další čas v~kritické sekci výpisu výsledku a~tímto byla paralelní verze programu velmi zpomalena. 
 
 \section{Závěr}
+V rámci této práce jsme nastudovali problém hledání maximálních nezávislých množin v grafech a algoritmy řešící tento problém. Dále jsme navrhli a implementovali paralelní verzi tohoto algoritmu, která využívá více procesorů. Dosažené zrychlení jsme vyhodnotili v kapitole \ref{sec:Evaluation}.
+
 
 \begin{thebibliography}{99}
 
@@ -184,7 +234,22 @@ ROBSON, J.M. \emph{Algorithms for maximum independent sets}. Journal of Algorith
 \end{thebibliography}
 
 \appendix
-\section{Použití programu} \label{appendix:ProgramUsage}
+\section{Překlad a použití programu} \label{appendix:ProgramUsage}
+Pro překlad programu je nutná knihovna Boost\footnote{\url{http://www.boost.org}} a překladový systém CMake\footnote{\url{http://www.cmake.org}}. Dále také je program nutné překládat překladačem podporujícím standard C++11. Samotný překlad lze provést například následujícím způsobem.
+\begin{verbatim}
+    mkdir build
+    cd build
+    cmake -DCMAKE_CXX_COMPILER=`which g++-4.7` ..
+    make
+\end{verbatim}
+
+Program následně bude přelož do spustitelného souboru \texttt{gal}. Možné přepínače lze získat pomocí nápovědy pod přepínačem \texttt{--help}. Nejdůležitějšími přepínačy jsou \texttt{-s} a \texttt{-p}, které určují, jestli se pustí sekvenční nebo paralelní verze algoritmu. Program lze spustit například následujícím způsobem.
+\begin{verbatim}
+    ./gal -s ../cesta/k/grafu.gml
+    ./gal -p ../cesta/k/grafu.gml
+\end{verbatim}
+
+Program na standardní výstup vypisuje nelezené maximální nezávislé množiny, pokud tento výpis není vypnut, a na standardní chybový výstup je vypsán čas puštěné verze algoritmu běhu algoritmu. 
 
 \section{Naměřené výsledky} \label{appendix:RawResults}
 
