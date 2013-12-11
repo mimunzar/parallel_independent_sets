@@ -97,13 +97,15 @@ Implementovaný algoritmus jsme převzali z~\cite{demel}. Jeho základem je meto
 \State $k \leftarrow 0$
 \State $R_k, S_k \leftarrow \emptyset$
 \State $N_k \leftarrow V$
-\While{True}  
+\While{True}
+  \State $reduce \leftarrow$ \textbf{false}
   \State \Comment test zda-li je R maximální                           
   \If {$N_k = \emptyset \land S_K = \emptyset$}
     \State $independent\_sets \leftarrow independent\_sets \cup \{R_k\}$
+    \State $reduce \leftarrow$ \textbf{true}
   \EndIf    
   \State \Comment test možností zvětšování R
-  \If{$\exists y \in S_k :  Adj(y) \cap N_k = \emptyset$}
+  \If{$(\exists y \in S_k :  Adj(y) \cap N_k = \emptyset) \lor reduce =$  \textbf{true} }
     \If {$k=0$}
       \State \Return $independent\_sets$
     \EndIf
