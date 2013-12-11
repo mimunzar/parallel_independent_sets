@@ -210,6 +210,8 @@ Ovšem jak si lze z~grafů všimnout, tak s~narůstajícím počtem vrcholů se 
 
 Kvůli tomuto problému jsme také experimentovali s~tím, že se maximální nezávislé množiny nebudou ukládat do paměti, ale rovnou vypisovat. S~tímto přístupem jsme ovšem dosahovali ještě horších výsledků, jelikož program trávil podstatně delší čas v~kritické sekci výpisu výsledku a~tímto byla paralelní verze programu velmi zpomalena. 
 
+Prostorová složitost paralelního algoritmu bude větší než prostorová složitost sekvenční verze, jelikož paralelní algoritmus si udržuje $N$ instancí matic v algoritmu zpětného navracení. Matice bude obsahovat maximálně $\alpha(G)$ řádků a právě $|V|$ sloupců.
+
 \section{Závěr}
 V~rámci této práce jsme nastudovali problém hledání maximálních nezávislých množin v~grafech a~algoritmy řešící tento problém. Dále jsme navrhli a~implementovali paralelní verzi tohoto algoritmu, která využívá více procesorů. Dosažené zrychlení jsme vyhodnotili v~kapitole~\ref{sec:Evaluation}.
 
@@ -234,6 +236,8 @@ ROBSON, J.M. \emph{Algorithms for maximum independent sets}. Journal of Algorith
   SIAM Journal on Computing 6.3 (1977): 537-546.
 
 \end{thebibliography}
+
+\pagebreak
 
 \appendix
 \section{Překlad a~použití programu} \label{appendix:ProgramUsage}
