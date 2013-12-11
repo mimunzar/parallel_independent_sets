@@ -1,3 +1,6 @@
+// Name: par_ind_sets.cpp
+// Description: Parallely computes maximal independent set in given graph.
+// Author: Jakub Sochor, xsocoh06@stud.fit.vutbr.cz
 #include "par_ind_sets.hpp"
 #include <thread>
 #include <atomic>

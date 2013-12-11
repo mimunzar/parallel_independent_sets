@@ -138,7 +138,7 @@ Námi implementovaný algoritmus~\ref{seq_independent_sets} využívá vzájemn�
 
 
 \subsection{Použitý paralelní algoritmus}
-Pro paralelní běh algoritmu pro hledání maximálních nezávislých množin jsme použili mírně upravený algoritmus~\ref{seq_independent_sets}. Tato úprava spočívá především v~tom, že algoritmu je předán již obsah množin $N_0, S_0, R_0$ a~také je již proveden výběr uzlu $v \in V$, o~který bude rozšířena množina $R_1$. 
+Pro paralelní běh algoritmu pro hledání maximálních nezávislých množin jsme použili mírně upravený algoritmus~\ref{seq_independent_sets}. Tato úprava spočívá především v~tom, že algoritmu je již předán obsah množin $N_0, S_0, R_0$ a~zároveň je předem proveden výběr uzlu $v \in V$, o~který bude rozšířena množina $R_1$. 
 
 To, že je algoritmu předán tento uzel $v$ je možné výhodně využít pro paralelní běh. Protože na nulté úrovni zanoření zpětného navracení je možné určit následný obsah množin $S_0, R_0$ a~$N_0$. Tyto množiny totiž budou změněny způsobem, že uzel $v$ bude vyjmut z~množiny $N_0$ a~přidán do množiny $S_0$.
 
@@ -202,7 +202,9 @@ Grafy vytvořené z~naměřených výsledků lze vidět na obrázku~\ref{fig:Spe
 \end{figure}
 
 
-Maximální teoreticky možné dosažitelné zrychlení na procesoru se čtyřmi jádry je 4,0. Jak lze vidět z~uvedených grafů, tak nám se podařilo dosáhnout zrychlení kolem 3,5. Toto považujeme za solidní výsledek, protože v~rámci programu je též nutné řešit synchronizaci přístupu do struktury obsahující výsledné maximální nezávislé množiny. 
+Maximální teoreticky možné dosažitelné zrychlení na procesoru se čtyřmi jádry je 4,0. Jak lze vidět z~uvedených grafů, tak nám se podařilo dosáhnout zrychlení kolem 3,5. Toto považujeme za solidní výsledek, protože v~rámci programu je též nutné řešit synchronizaci přístupu do struktury obsahující výsledné maximální nezávislé množiny.
+
+Vyhodnocení jsem také zkušebně provedli na serveru merlin, který má 8 jader. V okamžiku, kdy neběžel na tomto serveru žádný další výpočetně náročený proces jsme dosahovali zrychlení $s$ přibližně 6.  
 
 Ovšem jak si lze z~grafů všimnout, tak s~narůstajícím počtem vrcholů se zrychlení snižuje. Tento fakt je dle našeho zkoumání způsoben především tím, že velmi zásadně roste počet maximálních nezávislých množin a~jejich reprezentace v~paměti již není triviální a~program celkově využije velkého množství paměti (více než 1\,GB). 
 
@@ -250,6 +252,18 @@ Program následně bude přelož do spustitelného souboru \texttt{gal}. Možné
 \end{verbatim}
 
 Program na standardní výstup vypisuje nelezené maximální nezávislé množiny, pokud tento výpis není vypnut, a~na standardní chybový výstup je vypsán čas běhu puštěné verze algoritmu. 
+
+
+Pro vyhodnocení zrychlení paralelního algoritmu lze využít následujícího postupu.
+\begin{verbatim}
+    cd graphs
+    wget http://public.sochor.me/gal_eval_graphs.tar.bz2
+    tar xvjf gal_eval_graphs.tar.bz2
+    cd ../evaluation/
+    ./evaluate_all.sh
+\end{verbatim}
+
+
 
 \section{Naměřené výsledky} \label{appendix:RawResults}
 
